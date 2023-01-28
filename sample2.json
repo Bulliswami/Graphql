@@ -1,0 +1,48 @@
+[
+    {
+        "question": "Which cars are you interested in?",
+        "qno": 1,
+        "property": "usedOrNew",
+        "values": [
+            {
+                "key": "3",
+                "name": "Certified Cars",
+                "val": "3"
+            },
+            {
+                "key": "1",
+                "name": "New Cars",
+                "val": "1"
+            },
+            {
+                "key": "2",
+                "name": "Used Cars",
+                "val": "2"
+            }
+        ]
+    },
+    {
+        "question": "Which manufacturer are you considering?",
+        "qno": 3,
+        "property": "make",
+        "values": [
+            {
+                "name": "BMW",
+                "val": "4"
+            },
+            {
+                "name": "BMW",
+                "val": "4"
+            },
+            {
+                "name": "BMW",
+                "val": "4"
+            },
+            {
+                "name": "BMW",
+                "val": "4"
+            }
+        ]
+    }
+]
+
