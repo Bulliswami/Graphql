@@ -1,25 +1,32 @@
 const express = require("express");
-const { exportfunc, queryGenerator } = require("./database");
-const bodyParser = require('body-parser')
+const { exportfunc, queryGenerator } = require("./database-connection");
 const app = express();
 var cors = require('cors');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
 var { refineInput } = require("./asserts");
-var schema = buildSchema(`
+const { makeQuery } = require("./asserts");
 
+var schema = buildSchema(`
 type Query{
     hello:String
     getPropertyQuestions(domainName:String):[Question]
     getAutomobilePropertyAnswers(properties:[propertyans]):[AUTO]
     getCollegePropertyAnswers(properties:[propertyans]):[COLL]
     Getand(iuy:[Cu]):[COLL]
+    Insertbookmark(userid:String!,domainName:String!,bname:String!,bookmark:String):Boolean!
+    getBookmarks(userid:String!,domainName:String!,bname:String):[Bres]
 }
 input Cu{
     a:String
     b:String
 }
-
+type Bres{
+    userid:String
+    domainName:String
+    bname:String
+    bookmark:String
+}
 type Question{
     propertyName:String
     propertyQuestion:String
@@ -84,21 +91,6 @@ var root = {
         res.sort((a, b) => a.displayorder - b.displayorder)
         console.log(res);
         return res;
-
-        // res.forEach(async (ele1) => {
-        //     let dname = ele1.domainName;
-        //     let pname = ele1.propertyName;
-        //     ele1.allowedValues = [];
-        //     const res1 = await exportfunc(queryGenerator('propertydetail', ['domainName', 'propertyName']), [dname, pname]);
-        //     await res1.forEach((ele) => {
-        //         ele1.allowedValues.push({
-        //             "allowedValue": ele.allowedValue,
-        //             "allowedValueCode": ele.allowedValueCode
-        //         })
-        //     })
-        //     return res
-        // });
-
     },
     getAutomobilePropertyAnswers: async (inp) => {
         const res = refineInput(inp.properties, "auto");
@@ -113,9 +105,25 @@ var root = {
         const vals = res.vals
         const result = await exportfunc(querytorun, vals);
         return result;
+    },
+    getBookmarks: async ({ userid, domainName }) => {
+        query = makeQuery(["userid", "domainName"], "userbookmark", [1, 1]);
+        const res = await exportfunc(query, [userid, domainName]);
+        return res
+    },
+    Insertbookmark: async ({ userid, domainName, bname, bookmark }) => {
+        let query = "INSERT INTO userbookmark (userid,domainName,bname,bookmark) values(?,?,?,?)";
+        let checkquery = "SELECT * FROM user"
+        const checkres = await exportfunc(checkquery);
+        if (!checkres.map(ele => ele.userid).includes(userid)) {
+            let redq = "insert into user (userid) values(?)";
+            await exportfunc(redq, [userid]);
+        }
+        const res = await exportfunc(query, [userid, domainName, bname, bookmark]);
+        return true
     }
 }
-// app.use(cors);
+
 
 
 app.use('/graphql', cors(), graphqlHTTP({
@@ -125,12 +133,8 @@ app.use('/graphql', cors(), graphqlHTTP({
 }))
 
 app.listen(4000, () => {
-    console.log("Yes!")
+    console.log("Yes Running on port 4000!")
 });
 
-//const params = ['4', '6', '3'];
-//const query = queryGenerator('autofacttable', ['bodyStyle', 'make', 'age']);
-
-//exportfunc(query,params).then(res=>console.log(res));
 
 
