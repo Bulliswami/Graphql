@@ -16,6 +16,7 @@ type Query{
     Getand(iuy:[Cu]):[COLL]
     Insertbookmark(userid:String!,domainName:String!,bname:String!,bookmark:String):Boolean!
     getBookmarks(userid:String!,domainName:String!,bname:String):[Bres]
+    deleteBookmark(userid:String!,domainName:String!,bname:String):Boolean!
 }
 input Cu{
     a:String
@@ -121,6 +122,13 @@ var root = {
         }
         const res = await exportfunc(query, [userid, domainName, bname, bookmark]);
         return true
+    },
+    deleteBookmark: async ({ userid, domainName, bname }) => {
+        let query = "DELETE FROM userbookmark WHERE userid=? AND domainName=? AND bname = ?";
+        console.log(userid, domainName, bname)
+        const res = await exportfunc(query, [userid, domainName, bname]);
+        console.log(res);
+        return true;
     }
 }
 
