@@ -1,6 +1,5 @@
 
 const mysql = require('mysql2');
-
 const connection = mysql.createConnection({
     user: 'root',
     host: "localhost",
@@ -17,7 +16,6 @@ function queryGenerator(tablename, params) {
         query = "select * from " + tablename;
         return query;
     }
-
     query = "select * from " + tablename + " where ";
     for (i = 0; i < params.length - 1; i++) {
         paramslen += params[i] + "= ? and ";
@@ -26,16 +24,13 @@ function queryGenerator(tablename, params) {
     return query;
 }
 
-
-
 const exportfunc = async function gc(query, params) {
     const h = await new Promise((resolve) => {
-        connection.query(query, params, (err, res) => {
-            console.log(res);
+        connection.query(query, params, (err, res) => {  
             resolve(res);
         });
     })
     return h;
 }
 
-module.exports = {exportfunc, queryGenerator } 
+module.exports = { exportfunc, queryGenerator } 

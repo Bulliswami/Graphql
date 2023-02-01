@@ -9,8 +9,6 @@ const { makeQuery } = require("./asserts");
 
 var schema = buildSchema(`
 type Query{
-    hello:String
-    getPropertyQuestions(domainName:String):[Question]
     getAutomobilePropertyAnswers(properties:[propertyans]):[AUTO]
     getCollegePropertyAnswers(properties:[propertyans]):[COLL]
     Getand(iuy:[Cu]):[COLL]
@@ -66,13 +64,6 @@ input allows{
 `);
 
 var root = {
-    hello: () => {
-        return 'hello world!';
-    },
-    Getand: (it) => {
-        console.log("yup");
-        return [{ name: 'hello', url: 'g' }];
-    },
     getPropertyQuestions: async (inp) => {
         const query = queryGenerator('property', ['domainName'])
         const params = [inp.domainName]
@@ -90,7 +81,6 @@ var root = {
             })
         }
         res.sort((a, b) => a.displayorder - b.displayorder)
-        console.log(res);
         return res;
     },
     getAutomobilePropertyAnswers: async (inp) => {
@@ -115,6 +105,12 @@ var root = {
     Insertbookmark: async ({ userid, domainName, bname, bookmark }) => {
         let query = "INSERT INTO userbookmark (userid,domainName,bname,bookmark) values(?,?,?,?)";
         let checkquery = "SELECT * FROM user"
+        let precheckquery = "SELECT * FROM userbookmark where domainName=?";
+        const res1 = await exportfunc(precheckquery, [domainName]);
+        const data = res1.map(e => e.bname);
+        if (data.find((r) => r == bname)) {
+            return false
+        }
         const checkres = await exportfunc(checkquery);
         if (!checkres.map(ele => ele.userid).includes(userid)) {
             let redq = "insert into user (userid) values(?)";
@@ -125,21 +121,16 @@ var root = {
     },
     deleteBookmark: async ({ userid, domainName, bname }) => {
         let query = "DELETE FROM userbookmark WHERE userid=? AND domainName=? AND bname = ?";
-        console.log(userid, domainName, bname)
+
         const res = await exportfunc(query, [userid, domainName, bname]);
-        console.log(res);
         return true;
     }
 }
-
-
-
 app.use('/graphql', cors(), graphqlHTTP({
     schema: schema,
     rootValue: root,
     graphiql: true
 }))
-
 app.listen(4000, () => {
     console.log("Yes Running on port 4000!")
 });

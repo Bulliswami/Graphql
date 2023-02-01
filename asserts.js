@@ -34,7 +34,7 @@ const refineInput = (input, type) => {
         })
     })
     let { merged_vals, countforEachProp, propnames } = getDetails(properties);
-    console.log(countforEachProp);
+   
     let tablename;
     if (type === "auto") {
         tablename = "autofacttable"
@@ -43,7 +43,7 @@ const refineInput = (input, type) => {
         tablename = "collegefacttable"
     }
     let res = { query: makeQuery(propnames, tablename, countforEachProp), vals: merged_vals };
-    console.log(res);
+   
     return res;
 }
 
@@ -52,7 +52,7 @@ const makeQuery = (propames, tablename, countforEachProp) => {
     for (let j = 0; j < propames.length; j++) {
         begin += propames[j];
         begin += " in (";
-        console.log(countforEachProp[j]);
+     
         for (let k = 0; k < countforEachProp[j] - 1; k++) {
             begin += "?,";
         }
