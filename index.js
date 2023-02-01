@@ -12,14 +12,9 @@ type Query{
     getAutomobilePropertyAnswers(properties:[propertyans]):[AUTO]
     getPropertyQuestions(domainName:String):[Question]
     getCollegePropertyAnswers(properties:[propertyans]):[COLL]
-    Getand(iuy:[Cu]):[COLL]
     Insertbookmark(userid:String!,domainName:String!,bname:String!,bookmark:String):Boolean!
     getBookmarks(userid:String!,domainName:String!,bname:String):[Bres]
     deleteBookmark(userid:String!,domainName:String!,bname:String):Boolean!
-}
-input Cu{
-    a:String
-    b:String
 }
 
 type Question{
