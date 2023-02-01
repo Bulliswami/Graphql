@@ -10,6 +10,7 @@ const { makeQuery } = require("./asserts");
 var schema = buildSchema(`
 type Query{
     getAutomobilePropertyAnswers(properties:[propertyans]):[AUTO]
+    getPropertyQuestions(domainName:String):[Question]
     getCollegePropertyAnswers(properties:[propertyans]):[COLL]
     Getand(iuy:[Cu]):[COLL]
     Insertbookmark(userid:String!,domainName:String!,bname:String!,bookmark:String):Boolean!
@@ -20,12 +21,7 @@ input Cu{
     a:String
     b:String
 }
-type Bres{
-    userid:String
-    domainName:String
-    bname:String
-    bookmark:String
-}
+
 type Question{
     propertyName:String
     propertyQuestion:String
@@ -33,6 +29,14 @@ type Question{
     propertyDisplayType:String
     allowedValues:[Allows]
 }
+
+type Bres{
+    userid:String
+    domainName:String
+    bname:String
+    bookmark:String
+}
+
 
 type Allows{
     allowedValue:String
@@ -81,6 +85,26 @@ var root = {
             })
         }
         res.sort((a, b) => a.displayorder - b.displayorder)
+        return res;
+    },
+    getPropertyQuestions: async (inp) => {
+        const query = queryGenerator('property', ['domainName'])
+        const params = [inp.domainName]
+        const res = await exportfunc(query, params);
+        for (const ele1 of res) {
+            let dname = ele1.domainName;
+            let pname = ele1.propertyName;
+            ele1.allowedValues = [];
+            const res1 = await exportfunc(queryGenerator('propertydetail', ['domainName', 'propertyName']), [dname, pname]);
+            await res1.forEach((ele) => {
+                ele1.allowedValues.push({
+                    "allowedValue": ele.allowedValue,
+                    "allowedValueCode": ele.allowedValueCode
+                })
+            })
+        }
+        res.sort((a, b) => a.displayorder - b.displayorder)
+        console.log(res);
         return res;
     },
     getAutomobilePropertyAnswers: async (inp) => {
